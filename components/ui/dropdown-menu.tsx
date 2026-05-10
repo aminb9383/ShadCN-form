@@ -66,40 +66,21 @@ function DropdownMenuContent({
   children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  const ref = React.useRef<HTMLDivElement>(null)
-  const dataState = useDataState(ref)
-  const isOpen = dataState === "open"
-
   return (
-    <DropdownMenuPrimitive.Portal forceMount>
-      <DropdownMenuPrimitive.Content
-        ref={ref}
-        sideOffset={sideOffset}
-        forceMount
-        className={cn(
-          "z-50 min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground",
-          "shadow-[0_4px_6px_-1px_rgba(0,0,0,0.4),0_8px_24px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04)]",
-          "data-[state=closed]:pointer-events-none",
-          className
-        )}
-        {...props}
-      >
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <motion.div
-              key="dropdown-content"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={springInteraction}
-              style={{
-                transformOrigin: "var(--radix-dropdown-menu-content-transform-origin)",
-              }}
-            >
-              {children}
-            </motion.div>
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content asChild sideOffset={sideOffset} {...props}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={springInteraction}
+          className={cn(
+            "z-50 min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md",
+            className
           )}
-        </AnimatePresence>
+        >
+          {children}
+        </motion.div>
       </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
   )

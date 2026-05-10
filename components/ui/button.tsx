@@ -40,21 +40,22 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        sm:      "h-6 px-2 text-[12px] rounded-[5px]",
+        sm: "h-6 px-2 text-[12px] rounded-[5px]",
         default: "h-8 px-3",
-        lg:      "h-10 px-4 text-[14px] rounded-lg",
-        icon:    "h-8 w-8",
+        lg: "h-10 px-4 text-[14px] rounded-lg",
+        icon: "h-8 w-8",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
@@ -64,12 +65,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+        )}
         ref={ref}
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
