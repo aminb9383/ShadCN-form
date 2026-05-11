@@ -20,8 +20,6 @@ export default function RootLayout({
       className="h-full antialiased"
       suppressContentEditableWarning
     >
- 
-
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

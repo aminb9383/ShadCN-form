@@ -35,10 +35,10 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <Icon
+        {/* <Icon
           icon="tabler:chevron-down"
           className="h-4 w-4 shrink-0 transition-transform duration-[220ms] ease-[cubic-bezier(.23,1,.32,1)]"
-        />
+        /> */}
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );

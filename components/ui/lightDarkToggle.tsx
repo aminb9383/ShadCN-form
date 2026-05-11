@@ -10,21 +10,23 @@ import {
 import { MoonIcon, SunIcon } from "lucide-react";
 
 type a = {
-  className?: string
-}
+  className?: string;
+};
 
-export default function LightDarkToggle({className}: a) {
+export default function LightDarkToggle({ className }: a) {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   return (
     <div>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger 
-          className= {className}
-          onClick={() => {
-            document.body.classList.toggle("dark")
-            setIsDarkMode((e) => !e)} }>
+          <TooltipTrigger
+            className={className}
+            onClick={() => {
+              document.body.classList.toggle("dark");
+              setIsDarkMode((e) => !e);
+            }}
+          >
             {isDarkMode ? <MoonIcon /> : <SunIcon />}
           </TooltipTrigger>
 
