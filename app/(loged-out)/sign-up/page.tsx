@@ -23,7 +23,7 @@ import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { date, z } from "zod";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Field } from "@/components/ui/field";
@@ -34,22 +34,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  accountType: z.enum(["company", "personal"]),
-  companyName: z.string().optional(),
-  numberOfEmployees: z.coerce.number().optional(),
-});
+const formSchema = z
+  .object({
+    email: z.string().email(),
+    accountType: z.enum(["company", "personal"]),
+    companyName: z.string().optional(),
+    numberOfEmployees: z.coerce.number().optional(),
+    dob: z.date().refine((a) => {
+      const today = new Date();
+      const eighteenYearsAgo = new Date(
+        today.getFullYear() - 18,
+        today.getMonth(),
+        today.getDate(),
+      );
+      return a <= eighteenYearsAgo;
+    }, "you must be at least 18 years old"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.accountType === "company" && !data.companyName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["companyName"],
+        message: "Company name is required",
+      });
+    }
+
+    if (
+      data.accountType === "company" &&
+      (!data.numberOfEmployees || data.numberOfEmployees < 2)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["numberOfEmployees"],
+        message: "More number of Employees are required",
+      });
+    }
+  });
 
 export default function sighUpPage() {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      accountType: "personal" , // ← ADD THIS
-      
-      numberOfEmployees: undefined, // ← ADD THIS
+      accountType: "personal", // ← ADD THIS
     },
   });
 
@@ -57,7 +92,7 @@ export default function sighUpPage() {
     console.log("summit ");
   };
 
-const accountType = form.watch("accountType")
+  const accountType = form.watch("accountType");
 
   return (
     <Card className="w-full max-w-md m-auto mt-5">
@@ -110,48 +145,77 @@ const accountType = form.watch("accountType")
                 </FormItem>
               )}
             />
-          {accountType === "company" &&
-          
-          <>
-          <FormField
+            {accountType === "company" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="companyName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="company name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="numberOfEmployees"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of Employees</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Number of Employees"
+                          type="number"
+                          min={1}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
+            <FormField
               control={form.control}
-              name= "companyName"
+              name="dob"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="company name"
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>Date of birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className="flex justify-between"
+                        >
+                          <span>pick a date </span>
+                          <CalendarIcon />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-auto">
+                      <Calendar
+                        mode="single"
+                        defaultMonth={field.value}
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        fixedWeeks
+                        weekStartsOn={1}
+                        toDate={new Date()}
+                        from
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          <FormField
-              control={form.control}
-              name= "numberOfEmployees"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Employees</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Number of Employees"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          
-          
-
-            
-          </>
-          }
-
 
             {/* <FormField
               control={form.control}
